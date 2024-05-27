@@ -3,8 +3,8 @@ pipeline {
 
     stages {
         stage('Clone Repository'){
-            step{
-                git branch: 'main', url: 'https://github.com/kiran-c9/repo.git'
+            steps{
+                git branch: 'main', url: 'https://github.com/kiran-c9/SCM-Jenkins'
             }
         }
         stage('Stage-1') {
