@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository'){
+            step{
+                git branch: 'main', url: 'https://github.com/kiran-c9/repo.git'
+            }
+        }
+        stage('Stage-1') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        stage('Stage-2') {
+            steps {
+                echo 'Python-Script'
+            }
+        }
+        stage('Stage-3') {
+            steps {
+                echo 'Jenkins'
+            }
+        }
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+    }
+}
