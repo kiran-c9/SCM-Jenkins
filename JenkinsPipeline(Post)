@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building'
+            }
+        }
+        stage('Stage-1') {
+            steps {
+                echo 'hello world'
+            }
+        }
+    }
+    post{
+        always{
+            echo 'JenkinPipeline for Post'
+        }
+        success{
+            echo 'Pipeline runs sucessfully'
+        }
+        failure{
+            echo 'Pipelin failed'
+        }
+    }
+}
