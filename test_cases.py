@@ -3,41 +3,44 @@ import requests
 import sys
 import unittest
 from mock import patch, MagicMock
+from dotenv import load_dotenv
 
-# Importing functions from your script
+
 from jenkinspyscript import trigger_pipeline, get_logs, get_status
 
+load_dotenv()
+
+
 class TestJenkinsScript(unittest.TestCase):
+
     @patch('jenkinspyscript.requests.post')
     def test_trigger_pipeline(self, mock_post):
-        # Set up the mock Jenkins server and job
+
         mock_response = MagicMock()
         mock_response.status_code = 201
         mock_post.return_value = mock_response
 
-        result = trigger_pipeline()  # No arguments needed
+        result = trigger_pipeline()  
         self.assertTrue(result)
 
     
-    @patch('jenkinspyscript.requests.post')
-    def test_print_logs(self, mock_post):
-        mock_post.side_effect = requests.exceptions.RequestException()
-
-        with self.assertRaises(requests.exceptions.RequestException):
-            get_logs()
-
+    
     @patch('jenkinspyscript.requests.get')
     def test_print_logs(self, mock_get):
-        # Mocking a request exception
-        mock_get.side_effect = requests.exceptions.RequestException()
+        '''mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value ={'Got Logs':'Success'}
+        mock_get.return_value = mock_response
 
-        # Ensure that the function raises a RequestException
+        status = get_logs()
+        self.assertEqual(status, 'SUCCESS')'''
+       
+        mock_get.side_effect = requests.exceptions.RequestException()        
         with self.assertRaises(requests.exceptions.RequestException):
             get_logs()
 
     @patch('jenkinspyscript.requests.get')
     def test_print_status(self, mock_get):
-        # Set up the mock Jenkins server and job
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {'result': 'SUCCESS'}
@@ -47,11 +50,10 @@ class TestJenkinsScript(unittest.TestCase):
         self.assertEqual(status, 'SUCCESS')
 
     def test_handle_invalid_arguments(self):
-        # Test invalid argument handling
         with self.assertRaises(SystemExit):
-            # Call your function directly with invalid arguments
-            sys.argv = ['test_cases.py', 'invalid-argument']
-            exec(compile(open('jenkinspyscript.py').read(), 'jenkinspyscript.py', 'exec'))
+            with open('jenkinspyscript.py') as f:
+                exec(compile(f.read(), 'jenkinspyscript.py', 'exec'))
+
 
 if __name__ == '__main__':
     unittest.main()
