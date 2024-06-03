@@ -10,10 +10,7 @@ JOB_NAME = os.getenv('jobname')
 USERNAME = os.getenv('username')
 API_TOKEN = os.getenv('api')
 
-def check_env_variables():
-    if not all([URL_of_Jenkins, JOB_NAME, USERNAME, API_TOKEN]):
-        print("Please set the required environment variables: url, jobname, username, api")
-        sys.exit(1)
+
 
 def trigger_pipeline():
     url = f'{URL_of_Jenkins}/job/{JOB_NAME}/build'
@@ -37,7 +34,7 @@ def get_logs():
     last_build_url = f'{URL_of_Jenkins}/job/{JOB_NAME}/lastBuild/consoleText'
     try:
         response = requests.get(last_build_url, auth=(USERNAME, API_TOKEN))
-        response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+        response.raise_for_status()  
         if response.status_code == 200:
             logs = response.text
             if logs:
@@ -57,11 +54,13 @@ def get_status():
     last_build_url = f'{URL_of_Jenkins}/job/{JOB_NAME}/lastBuild/api/json'
     try:
         response = requests.get(last_build_url, auth=(USERNAME, API_TOKEN))
+        response.raise_for_status() 
         if response.status_code == 200:
             build_info = response.json()
             result = build_info.get('result')
             if result:
                 print(f"Status: {result}")
+                return result  
             else:
                 print("No status available.")
         elif response.status_code == 404:
@@ -70,15 +69,20 @@ def get_status():
             print(f"Failed to fetch status. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
+        raise e  
 
 if __name__ == "__main__":
-    check_env_variables()
     
     if len(sys.argv) < 2:
         print("Usage: python script.py [trigger|logs|status]")
         sys.exit(1)
+
+    
     
     command = sys.argv[1]
+    if command not in ['trigger', 'logs', 'status']:
+        print("Invalid command.")
+        sys.exit(1)
     if command == "trigger":
         trigger_pipeline()
     elif command == "logs":
